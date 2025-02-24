@@ -5,6 +5,48 @@
 Escriba el codigo que ejecute la accion solicitada en cada pregunta.
 """
 
+import pandas as pd
+import glob
+import os
+
+def open_data(input_directory):
+    carpetas = ["test/negative", "test/neutral", "test/positive", 
+                "train/negative", "train/neutral", "train/positive"]
+    test_train = ['test', 'train']
+    targets = ['negative', 'neutral', 'positive']
+
+    
+    
+    # Iteramos sobre las carpetas
+    for carpeta in test_train:
+        # Aqui se guardaran los datos
+        secuencia = []
+        path = input_directory + '/' + carpeta
+
+        for target in targets:
+            files = glob.glob(f'{path}/{target}/*.txt')
+            
+
+            # Se itera sobre cada archivo txt
+            for file in files:
+                with open(file, 'r', encoding='utf-8') as f:
+                    raw_content = f.read()
+                    secuencia.append((raw_content, target))
+        
+        # Se crea el archivo test.csv y train.csv
+        csv_creator(secuencia, carpeta)
+
+    return secuencia
+
+def csv_creator(data, csv_name):
+    ruta = f'files/output/{csv_name}_dataset.csv'
+    df = pd.DataFrame(data, columns=['phrase','target'])
+
+    # Crea la carpeta output
+    if not os.path.exists('files/output'):
+        os.makedirs('files/output')
+    # Crea los archivos csv
+    df.to_csv(ruta, index=False)
 
 def pregunta_01():
     """
@@ -71,3 +113,9 @@ def pregunta_01():
 
 
     """
+    path = 'files/input'
+    # Crea los archivos csv
+    datos = open_data(path)
+
+pregunta_01()
+
